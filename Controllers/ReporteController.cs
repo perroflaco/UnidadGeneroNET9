@@ -27,11 +27,11 @@ namespace Reporte.Controllers
             return Result;
         }
 
-        [HttpGet("administrador/general")]
-        public List<ReporteAdminitradorGeneral> Get1()
+        [HttpGet("administrador/general/{trimestre}/{anio}")]
+        public List<ReporteAdminitradorGeneral> Get1(int trimestre, int anio)
         {
             List<ReporteAdminitradorGeneral> Result = new List<ReporteAdminitradorGeneral>();
-            Result = Reporte.ObtenerReporteGeneral();
+            Result = Reporte.ObtenerReporteGeneral(trimestre,anio);
             return Result;
         }
         [HttpPost()]

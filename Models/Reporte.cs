@@ -10,7 +10,7 @@ namespace Reporte.Models
         private const String SPListaReportes = "SP_Lista_Reportes";
         private const String SPObtenerReportes = "SP_Obtener_Reportes";
         private const String SPEliminarReporte = "SP_Eliminar_Reporte";
-        private const String SPReporteGeneral = "SP_Adminitrador_Reporte_General";
+        private const String SPReporteGeneral = "SP_Adminitrador_Reporte_General_parametros";
         private string SVCUNIDADGENERO { get; set; } = "sqlprodv21_UnidadadGenero";
         public ReporteModels() { }
         public ReporteResponse Crear(ReporteRequest datos)
@@ -89,13 +89,19 @@ namespace Reporte.Models
             );
             return ResultData[0];
         }
-        public List<ReporteAdminitradorGeneral> ObtenerReporteGeneral()
+        public List<ReporteAdminitradorGeneral> ObtenerReporteGeneral(int trimestre,int anio)
         {
             List<ReporteAdminitradorGeneral> Result = new List<ReporteAdminitradorGeneral>();
             DataMapper<ReporteAdminitradorGeneralBD> BDdatos = new DataMapper<ReporteAdminitradorGeneralBD>(SVCUNIDADGENERO);
             List<ReporteAdminitradorGeneralBD> ResultData = BDdatos.FromStoredProcedure
             (
-                SPReporteGeneral
+                SPReporteGeneral,
+                new List<DataParam>()
+                {
+                    new DataParam(){ Id = "@Trimestre", Value = trimestre, Type = System.Data.DbType.Int32 },
+                    new DataParam(){ Id = "@Anio", Value = anio, Type = System.Data.DbType.Int32 }
+
+                }
             );
             if (ResultData.Count > 0)
             {

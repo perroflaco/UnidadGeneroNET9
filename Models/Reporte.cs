@@ -92,8 +92,6 @@ namespace Reporte.Models
         public List<ReporteAdminitradorGeneral> ObtenerReporteGeneral()
         {
             List<ReporteAdminitradorGeneral> Result = new List<ReporteAdminitradorGeneral>();
-            ReporteAdminitradorGeneral Estructura = new ReporteAdminitradorGeneral();
-            Estructura.Areas = new List<ReporteAdminitradorArea>();
             DataMapper<ReporteAdminitradorGeneralBD> BDdatos = new DataMapper<ReporteAdminitradorGeneralBD>(SVCUNIDADGENERO);
             List<ReporteAdminitradorGeneralBD> ResultData = BDdatos.FromStoredProcedure
             (
@@ -103,9 +101,116 @@ namespace Reporte.Models
             {
                 ResultData.ForEach(r =>
                 {
-                    Estructura.IdAccion = r.IdAccion;
-                    Estructura.Accion = r.Accion;
-                    Result.Add(Estructura);
+                    var existe = Result.Find(ra => ra.IdAccion == r.IdAccion);
+                    if (existe == null)
+                    {
+                        ReporteAdminitradorGeneral accion = new ReporteAdminitradorGeneral();
+                        accion.IdAccion = r.IdAccion;
+                        accion.Accion = r.Accion;
+                        accion.Areas = new List<ReporteAdminitradorArea>();
+                        accion.TotalParticipantes = new List<TotalParticipantes>();
+                        ReporteAdminitradorArea area = new ReporteAdminitradorArea();
+                        area.IdArea = r.Id;
+                        area.Area = r.Nombre;
+                        area.Actividades = new List<ReporteAdminitradorActivdad>();
+                        accion.Areas.Add(area);
+                        ReporteAdminitradorActivdad activdad = new ReporteAdminitradorActivdad();
+                        activdad.IdActividad = r.IdActividad;
+                        activdad.Actividad = r.Actividad;
+                        activdad.Hombres = r.Hombres;
+                        activdad.Mujeres = r.Mujeres;
+                        activdad.Descripcion = r.Descripcion;
+                        activdad.ResultadosCualitativos = r.Cualitativos;
+                        activdad.MediosVerificacion = r.IdMedio;
+                        activdad.Observaciones = r.Observaciones;
+                        area.Actividades.Add(activdad);
+                        TotalParticipantes participantes = new TotalParticipantes();
+                        participantes.IdActividad = r.IdActividad;
+                        participantes.Actividad = r.Actividad;
+                        participantes.Hombres = r.Hombres;
+                        participantes.Mujeres = r.Mujeres;
+                        accion.TotalParticipantes.Add(participantes);
+                        Result.Add(accion);
+                    }
+                    else
+                    {
+                        var indexgeneral = Result.FindIndex(r => r.IdAccion == r.IdAccion);
+                        var existearea = Result[indexgeneral].Areas.Find(a => a.IdArea == r.Id);
+                        if (existearea == null)
+                        {
+                            ReporteAdminitradorArea areanueva = new ReporteAdminitradorArea();
+                            areanueva.IdArea = r.Id;
+                            areanueva.Area = r.Nombre;
+                            areanueva.Actividades = new List<ReporteAdminitradorActivdad>();
+                            Result[indexgeneral].Areas.Add(areanueva);
+                            var indexarea = Result[indexgeneral].Areas.FindIndex(aa => aa.IdArea == r.Id);
+                            var misma = Result[indexgeneral].IdAccion == r.IdAccion ? true : false;
+                            if (misma)
+                            {
+                                ReporteAdminitradorActivdad activdadnueva = new ReporteAdminitradorActivdad();
+                                activdadnueva.IdActividad = r.IdActividad;
+                                activdadnueva.Actividad = r.Actividad;
+                                activdadnueva.Hombres = r.Hombres;
+                                activdadnueva.Mujeres = r.Mujeres;
+                                activdadnueva.Descripcion = r.Descripcion;
+                                activdadnueva.ResultadosCualitativos = r.Cualitativos;
+                                activdadnueva.MediosVerificacion = r.IdMedio;
+                                activdadnueva.Observaciones = r.Observaciones;
+                                Result[indexgeneral].Areas[indexarea].Actividades.Add(activdadnueva);
+                                var indextotal = Result[indexgeneral].TotalParticipantes.FindIndex(t => t.IdActividad == r.IdActividad);
+                                if (indextotal != -1)
+                                {
+                                    Result[indexgeneral].TotalParticipantes[indextotal].Hombres = Result[indexgeneral].TotalParticipantes[indextotal].Hombres + r.Hombres;
+                                    Result[indexgeneral].TotalParticipantes[indextotal].Mujeres = Result[indexgeneral].TotalParticipantes[indextotal].Mujeres + r.Mujeres;
+
+                                }
+                                else
+                                {
+                                    TotalParticipantes participantes = new TotalParticipantes();
+                                    participantes.IdActividad = r.IdActividad;
+                                    participantes.Actividad = r.Actividad;
+                                    participantes.Hombres = r.Hombres;
+                                    participantes.Mujeres = r.Mujeres;
+                                    Result[indexgeneral].TotalParticipantes.Add(participantes);
+                                }
+
+                            }
+                        }
+                        else
+                        {
+                            var indexarea = Result[indexgeneral].Areas.FindIndex(aa => aa.IdArea == r.Id);
+                            var misma = Result[indexgeneral].IdAccion == r.IdAccion ? true : false;
+                            if (misma)
+                            {
+                                ReporteAdminitradorActivdad activdadnueva = new ReporteAdminitradorActivdad();
+                                activdadnueva.IdActividad = r.IdActividad;
+                                activdadnueva.Actividad = r.Actividad;
+                                activdadnueva.Hombres = r.Hombres;
+                                activdadnueva.Mujeres = r.Mujeres;
+                                activdadnueva.Descripcion = r.Descripcion;
+                                activdadnueva.ResultadosCualitativos = r.Cualitativos;
+                                activdadnueva.MediosVerificacion = r.IdMedio;
+                                activdadnueva.Observaciones = r.Observaciones;
+                                Result[indexgeneral].Areas[indexarea].Actividades.Add(activdadnueva);
+                                var indextotal = Result[indexgeneral].TotalParticipantes.FindIndex(t => t.IdActividad == r.IdActividad);
+                                if (indextotal != -1)
+                                {
+                                    Result[indexgeneral].TotalParticipantes[indextotal].Hombres = Result[indexgeneral].TotalParticipantes[indextotal].Hombres + r.Hombres;
+                                    Result[indexgeneral].TotalParticipantes[indextotal].Mujeres = Result[indexgeneral].TotalParticipantes[indextotal].Mujeres + r.Mujeres;
+
+                                }
+                                else
+                                {
+                                    TotalParticipantes participantes = new TotalParticipantes();
+                                    participantes.IdActividad = r.IdActividad;
+                                    participantes.Actividad = r.Actividad;
+                                    participantes.Hombres = r.Hombres;
+                                    participantes.Mujeres = r.Mujeres;
+                                    Result[indexgeneral].TotalParticipantes.Add(participantes);
+                                }
+                            }
+                        }
+                    }
 
                 });
             }

@@ -7,7 +7,8 @@ namespace Enlace.Models
     public class EnlaceModels
     {
         private const String SPCrearEnlace = "SP_Crear_Enlace";
-        private string SVCUNIDADGENERO { get; set; } = "local_UnidadGenero";
+        private string SVCUNIDADGENERO { get; set; } = "sqlprodv21_UnidadadGenero";
+
         public EnlaceModels() { }
         public EnlaceResponse Crear(EnlaceRequest datos)
         {

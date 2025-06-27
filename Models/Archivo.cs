@@ -7,7 +7,7 @@ namespace Archivo.Models
     public class ArchivoModels
     {
         private const String SPCrearArchivo = "SP_Crear_Archivo";
-        private string SVCUNIDADGENERO { get; set; } = "local_UnidadGenero";
+        private string SVCUNIDADGENERO { get; set; } = "sqlprodv21_UnidadadGenero";
         public ArchivoModels() { }
         public ArchivoResponse Crear(ArchivoRequest datos)
         {

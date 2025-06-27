@@ -10,7 +10,7 @@ namespace Catalogo.Models
         private const String SPObtenerActividades = "SP_Obtener_Actividades";
         private const String SPObtenerMedios = "SP_Obtener_Medios";
         private const String SPListaAreasEnlaces = "SP_Lista_Area_Enlance";
-        private string SVCUNIDADGENERO { get; set; } = "local_UnidadGenero";
+        private string SVCUNIDADGENERO { get; set; } = "sqlprodv21_UnidadadGenero";
         private string LOCALUNIDADGENERO {get; set;} = "local_UnidadGenero";
         public CatalogoModels() { }
         public Catalogos Obtener()

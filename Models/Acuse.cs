@@ -12,7 +12,7 @@ namespace Acuse.Models
         ReporteModels Reporte { get; set; } 
         private const String SPCrearAcuse = "SP_Crear_Acuse";
         public const String SPObtenerAcuses = "SP_Obtener_Acuses";
-        private string SVCUNIDADGENERO { get; set; } = "local_UnidadGenero";
+        private string SVCUNIDADGENERO { get; set; } = "sqlprodv21_UnidadadGenero";
         public AcuseModels() {
             Reporte = new ReporteModels();
          }

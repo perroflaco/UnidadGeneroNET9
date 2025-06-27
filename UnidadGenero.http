@@ -1,0 +1,6 @@
+@UnidadGenero_HostAddress = http://localhost:5160
+
+GET {{UnidadGenero_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

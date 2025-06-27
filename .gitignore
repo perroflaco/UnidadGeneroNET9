@@ -11,3 +11,5 @@ web.config
 index.html
 index.html.br
 index.html.gz
+/bin
+/obj

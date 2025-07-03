@@ -22,8 +22,218 @@ namespace Upload.Controllers
 
     [Route("api/[controller]")]
     [ApiController]
+    
     public class UploadController : ControllerBase
     {
+        [HttpGet("download/{anio}/{trimestre}/{area}/{fileName}")]
+        public async Task<IActionResult> DescargarArchivo(int anio, int trimestre, string area, string fileName)
+        {
+            Server = SEVConfigAssistant.Configuration["SambaResource:UDG:Server"];
+            Shared = SEVConfigAssistant.Configuration["SambaResource:UDG:Shared"];
+            Domain = SEVConfigAssistant.Configuration["SambaResource:UDG:Domain"];
+            Usuario = SEVConfigAssistant.Configuration["SambaResource:UDG:User"];
+            Clave = SEVConfigAssistant.Configuration["SambaResource:UDG:Password"];
+
+            AuthUser = new NtlmPasswordAuthentication(Domain, Usuario, Clave);
+            string trimestreFolder = $"Trimestre{Math.Clamp(trimestre, 1, 4)}";
+            string remoteFilePath = $"smb://{Server}/{Shared}/{anio}/{trimestreFolder}/{area}/{fileName}";
+            SmbFile remoteFile = new SmbFile(remoteFilePath, AuthUser);
+
+            if (!remoteFile.Exists() || remoteFile.IsDirectory())
+            {
+            return NotFound("Archivo no encontrado.");
+            }
+
+            using (var inputStream = remoteFile.GetInputStream())
+            using (var memoryStream = new MemoryStream())
+            {
+                byte[] buffer = new byte[81920];
+                int bytesRead;
+                while ((bytesRead = inputStream.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    memoryStream.Write(buffer, 0, bytesRead);
+                }
+                var content = memoryStream.ToArray();
+                var contentType = "application/octet-stream";
+                return File(content, contentType, fileName);
+            }
+        }
+
+        [HttpGet("{anio}/{trimestre}")]
+        public async Task<IActionResult> GetArchivosPorTrimestre(int anio, int trimestre)
+        {
+            Server = SEVConfigAssistant.Configuration["SambaResource:UDG:Server"];
+            Shared = SEVConfigAssistant.Configuration["SambaResource:UDG:Shared"];
+            Domain = SEVConfigAssistant.Configuration["SambaResource:UDG:Domain"];
+            Usuario = SEVConfigAssistant.Configuration["SambaResource:UDG:User"];
+            Clave = SEVConfigAssistant.Configuration["SambaResource:UDG:Password"];
+            Recurso = SEVConfigAssistant.Configuration["Resources:ImageURL"];
+
+            AuthUser = new NtlmPasswordAuthentication(Domain, Usuario, Clave);
+            string trimestreFolder = $"Trimestre{Math.Clamp(trimestre, 1, 4)}";
+            string remotePath = $"smb://{Server}/{Shared}/{anio}/{trimestreFolder}/";
+            SmbFile trimestreDir = new SmbFile(remotePath, AuthUser);
+
+            var resultado = new System.Collections.Generic.List<object>();
+
+            if (trimestreDir.Exists() && trimestreDir.IsDirectory())
+            {
+                foreach (var areaDir in trimestreDir.ListFiles())
+                {
+                    if (areaDir.IsDirectory())
+                    {
+                        var archivos = new System.Collections.Generic.List<object>();
+                        foreach (var file in areaDir.ListFiles())
+                        {
+                            if (!file.IsDirectory())
+                            {
+                                archivos.Add(new
+                                {
+                                    Archivo = file.GetName(),
+                                    Path = $"{anio}/{trimestreFolder}/{areaDir.GetName().TrimEnd('/')}/{file.GetName()}",
+                                    Url = $"{Recurso}{anio}/{trimestreFolder}/{areaDir.GetName().TrimEnd('/')}/{file.GetName()}"
+                                });
+                            }
+                        }
+                        resultado.Add(new
+                        {
+                            Area = areaDir.GetName().TrimEnd('/'),
+                            Archivos = archivos
+                        });
+                    }
+                }
+            }
+
+            return Ok(new
+            {
+                Trimestre = trimestre,
+                Areas = resultado
+            });
+        }
+
+        [HttpGet("{anio}")]
+        public async Task<IActionResult> GetArchivosPorAnio(int anio)
+        {
+            Server = SEVConfigAssistant.Configuration["SambaResource:UDG:Server"];
+            Shared = SEVConfigAssistant.Configuration["SambaResource:UDG:Shared"];
+            Domain = SEVConfigAssistant.Configuration["SambaResource:UDG:Domain"];
+            Usuario = SEVConfigAssistant.Configuration["SambaResource:UDG:User"];
+            Clave = SEVConfigAssistant.Configuration["SambaResource:UDG:Password"];
+            Recurso = SEVConfigAssistant.Configuration["Resources:ImageURL"];
+
+            AuthUser = new NtlmPasswordAuthentication(Domain, Usuario, Clave);
+            string remotePath = $"smb://{Server}/{Shared}/{anio}/";
+            SmbFile anioDir = new SmbFile(remotePath, AuthUser);
+
+            var resultado = new System.Collections.Generic.List<object>();
+
+            if (anioDir.Exists() && anioDir.IsDirectory())
+            {
+                foreach (var trimestreDir in anioDir.ListFiles())
+                {
+                    if (trimestreDir.IsDirectory())
+                    {
+                        string trimestre = trimestreDir.GetName().TrimEnd('/');
+                        var areas = new System.Collections.Generic.List<object>();
+                        foreach (var areaDir in trimestreDir.ListFiles())
+                        {
+                            if (areaDir.IsDirectory())
+                            {
+                                var archivos = new System.Collections.Generic.List<object>();
+                                foreach (var file in areaDir.ListFiles())
+                                {
+                                    if (!file.IsDirectory())
+                                    {
+                                        archivos.Add(new
+                                        {
+                                            Archivo = file.GetName(),
+                                            Path = $"{anio}/{trimestre}/{areaDir.GetName().TrimEnd('/')}/{file.GetName()}",
+                                            Url = $"{Recurso}{anio}/{trimestre}/{areaDir.GetName().TrimEnd('/')}/{file.GetName()}"
+                                        });
+                                    }
+                                }
+                                areas.Add(new
+                                {
+                                    Area = areaDir.GetName().TrimEnd('/'),
+                                    Archivos = archivos
+                                });
+                            }
+                        }
+                        resultado.Add(new
+                        {
+                            Trimestre = trimestre,
+                            Areas = areas
+                        });
+                    }
+                }
+            }
+
+            return Ok(new
+            {
+                Anio = anio,
+                Trimestres = resultado
+            });
+        }
+
+        [HttpGet("{anio}/area/{area}")]
+        public async Task<IActionResult> GetArchivosPorAreaYAnio(int anio, string area)
+        {
+            Server = SEVConfigAssistant.Configuration["SambaResource:UDG:Server"];
+            Shared = SEVConfigAssistant.Configuration["SambaResource:UDG:Shared"];
+            Domain = SEVConfigAssistant.Configuration["SambaResource:UDG:Domain"];
+            Usuario = SEVConfigAssistant.Configuration["SambaResource:UDG:User"];
+            Clave = SEVConfigAssistant.Configuration["SambaResource:UDG:Password"];
+            Recurso = SEVConfigAssistant.Configuration["Resources:ImageURL"];
+
+            AuthUser = new NtlmPasswordAuthentication(Domain, Usuario, Clave);
+            string remotePath = $"smb://{Server}/{Shared}/{anio}/";
+            SmbFile anioDir = new SmbFile(remotePath, AuthUser);
+
+            var resultado = new System.Collections.Generic.List<object>();
+
+            if (anioDir.Exists() && anioDir.IsDirectory())
+            {
+                foreach (var trimestreDir in anioDir.ListFiles())
+                {
+                    if (trimestreDir.IsDirectory())
+                    {
+                        string trimestre = trimestreDir.GetName().TrimEnd('/');
+                        string areaPath = $"{trimestreDir.GetPath()}{area}/";
+                        SmbFile areaDir = new SmbFile(areaPath, AuthUser);
+
+                        if (areaDir.Exists() && areaDir.IsDirectory())
+                        {
+                            var archivos = new System.Collections.Generic.List<object>();
+                            foreach (var file in areaDir.ListFiles())
+                            {
+                                if (!file.IsDirectory())
+                                {
+                                    archivos.Add(new
+                                    {
+                                        Archivo = file.GetName(),
+                                        Path = $"{anio}/{trimestre}/{area}/{file.GetName()}",
+                                        Url = $"{Recurso}{anio}/{trimestre}/{area}/{file.GetName()}"
+                                    });
+                                }
+                            }
+                            resultado.Add(new
+                            {
+                                Trimestre = trimestre,
+                                Archivos = archivos
+                            });
+                        }
+                    }
+                }
+            }
+
+            return Ok(new
+            {
+                Anio = anio,
+                Area = area,
+                Trimestres = resultado
+            });
+        }
+
         public string Server { get; private set; }
         public string Shared { get; private set; }
         public string Domain { get; private set; }
@@ -32,10 +242,10 @@ namespace Upload.Controllers
         public string Recurso { get; private set; }
         private NtlmPasswordAuthentication AuthUser { get; set; }
 
-        [HttpPost]
+        [HttpPost("{trimestre}/{area}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
-        public UploadResponse UploadFileAsync([FromForm] UploadRequest request)
+        public async Task<UploadResponse> UploadFileAsync([FromForm] UploadRequest request, int trimestre, string area)
         {
             UploadResponse Result = new UploadResponse();
 
@@ -62,22 +272,35 @@ namespace Upload.Controllers
                 return Result;
             }
 
-            CrearArchivoAsync(request.file.FileName, request.file).Wait();
+            var year = DateTime.Now.Year.ToString();
+            var trimestreFolder = $"Trimestre{Math.Clamp(trimestre, 1, 4)}";
+            var areaFolder = area?.Trim() ?? "General";
 
-            Result.Path = request.file.FileName;
-            Result.URL = Recurso + request.file.FileName;
+            var relativePath = $"{year}/{trimestreFolder}/{areaFolder}/";
+            var fileName = request.file.FileName;
+
+            await CrearArchivoAsync(relativePath, fileName, request.file);
+
+            Result.Path = $"{relativePath}{fileName}";
+            Result.URL = $"{Recurso}{relativePath}{fileName}";
 
             return Result;
         }
 
-        public async Task CrearArchivoAsync(string FileName, IFormFile file)
+        public async Task CrearArchivoAsync(string relativePath, string fileName, IFormFile file)
         {
             AuthUser = new NtlmPasswordAuthentication(Domain, Usuario, Clave);
 
+            string remoteDirPath = $"smb://{Server}/{Shared}/{relativePath}";
+            string remoteFilePath = $"{remoteDirPath}{fileName}";
 
-            //SMBResource = "smb://fs36.in.sev.gob.mx/SisFs/UDG/";
-            string remotePath = $"smb://{Server}/{Shared}/{FileName}";
-            SmbFile RemoteFile = new SmbFile(remotePath, AuthUser);
+            SmbFile remoteDir = new SmbFile(remoteDirPath, AuthUser);
+            if (!remoteDir.Exists())
+            {
+                remoteDir.Mkdirs();
+            }
+
+            SmbFile RemoteFile = new SmbFile(remoteFilePath, AuthUser);
 
             if (!RemoteFile.Exists())
             {

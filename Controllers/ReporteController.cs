@@ -27,8 +27,8 @@ namespace Reporte.Controllers
             return Result;
         }
 
-        [HttpGet("administrador/general/{trimestre}/{anio}")]
-        public List<ReporteAdminitradorGeneral> Get1(int trimestre, int anio)
+        [HttpGet("administrador/general")]
+        public List<ReporteAdminitradorGeneral> Get1( [FromQuery] int trimestre =0, [FromQuery] int anio=0)
         {
             List<ReporteAdminitradorGeneral> Result = new List<ReporteAdminitradorGeneral>();
             Result = Reporte.ObtenerReporteGeneral(trimestre,anio);

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnidadGenero.Class;
 using SEV.Library;
+using SMBLibrary.SMB1;
 namespace Reporte.Models
 {
     public class ReporteModels
@@ -9,9 +10,12 @@ namespace Reporte.Models
         private const String SPCrearReporte = "SP_Crear_Reporte";
         private const String SPListaReportes = "SP_Lista_Reportes";
         private const String SPObtenerReportes = "SP_Obtener_Reportes";
+        private const String SPObtenerReportesTrimestreArea = "SP_Obtener_Reportes_Trimestre_Area";
+        private const String SPActualizarReporteFinalizado = "SP_Actualizar_Reporte_Finalizado";
         private const String SPEliminarReporte = "SP_Eliminar_Reporte";
         private const String SPReporteGeneral = "SP_Adminitrador_Reporte_General";
         private const String SPReporteGeneralParametros = "SP_Adminitrador_Reporte_General_parametros";
+        private const string SPEstAdoTrimestreReporte = "SP_Estado_Reporte_Trimestre";
         private string SVCUNIDADGENERO { get; set; } = "sqlprodv21_UnidadadGenero";
         public ReporteModels() { }
         public ReporteResponse Crear(ReporteRequest datos)
@@ -58,6 +62,99 @@ namespace Reporte.Models
             }
             return Result;
         }
+        public List<ReportesTrimestreArea> ReportesTrimestreArea(int trimestre,int idarea)
+        {
+            List<ReportesTrimestreArea> Result = new List<ReportesTrimestreArea>();
+            DataMapper<ReporteResponse> BDdatos = new DataMapper<ReporteResponse>(SVCUNIDADGENERO);
+            List<ReporteResponse> ResultData = BDdatos.FromStoredProcedure
+            (
+                SPObtenerReportesTrimestreArea,
+                                new List<DataParam>()
+                {
+                    new DataParam(){ Id = "@Trimestre", Value = trimestre, Type = System.Data.DbType.Int32},
+                    new DataParam(){ Id = "@IdArea", Value = idarea, Type = System.Data.DbType.Int32},
+                }
+            );
+            if (ResultData.Count > 0)
+            {
+                ResultData.ForEach(d =>
+                {
+                    ReportesTrimestreArea? accion = Result.Find(a => a.IdAccion == d.IdAccion);
+                    if (accion == null)
+                    {
+                        ReportesTrimestreArea accionnueva = new ReportesTrimestreArea();
+                        accionnueva.IdAccion = d.IdAccion;
+                        accionnueva.Accion = d.NombreAccion;
+                        accionnueva.Reportes = new List<ReporteResponse>();
+                        ReporteResponse reporte = new ReporteResponse();
+                        reporte.Id = d.Id;
+                        reporte.IdAccion = d.IdAccion;
+                        reporte.NombreAccion = d.NombreAccion;
+                        reporte.Actividad = d.Actividad;
+                        reporte.NombreActividad = d.NombreActividad;
+                        reporte.Trimestre = d.Trimestre;
+                        reporte.IdArea = d.IdArea;
+                        reporte.Area = d.Area;
+                        reporte.Hombres = d.Hombres;
+                        reporte.Mujeres = d.Mujeres;
+                        reporte.Descripcion = d.Descripcion;
+                        reporte.Cualitativos = d.Cualitativos;
+                        reporte.Porcentaje = d.Porcentaje;
+                        reporte.IdMedio = d.IdMedio;
+                        reporte.Observaciones = d.Observaciones;
+                        reporte.FechaCreacion = d.FechaCreacion;
+                        reporte.FechaModificacion = d.FechaModificacion;
+                        reporte.Finalizado = d.Finalizado;
+                        accionnueva.Reportes.Add(reporte);
+                        Result.Add(accionnueva);
+                    }
+                    else
+                    {
+                        int index = Result.FindIndex(i => i.IdAccion == d.IdAccion);
+                        ReporteResponse reporte = new ReporteResponse();
+                        reporte.Id = d.Id;
+                        reporte.IdAccion = d.IdAccion;
+                        reporte.NombreAccion = d.NombreAccion;
+                        reporte.Actividad = d.Actividad;
+                        reporte.NombreActividad = d.NombreActividad;
+                        reporte.Trimestre = d.Trimestre;
+                        reporte.IdArea = d.IdArea;
+                        reporte.Area = d.Area;
+                        reporte.Hombres = d.Hombres;
+                        reporte.Mujeres = d.Mujeres;
+                        reporte.Descripcion = d.Descripcion;
+                        reporte.Cualitativos = d.Cualitativos;
+                        reporte.Porcentaje = d.Porcentaje;
+                        reporte.IdMedio = d.IdMedio;
+                        reporte.Observaciones = d.Observaciones;
+                        reporte.FechaCreacion = d.FechaCreacion;
+                        reporte.FechaModificacion = d.FechaModificacion;
+                        reporte.Finalizado = d.Finalizado;
+                        Result[index].Reportes.Add(reporte); 
+                    }                  
+                });
+            }
+            return Result;
+        }
+        public ActualizarResponse ReporteFinalizado(int idreporte)
+        {
+            List<ActualizarResponse> Result = new List<ActualizarResponse>();
+            DataMapper<ActualizarResponse> BDdatos = new DataMapper<ActualizarResponse>(SVCUNIDADGENERO);
+            List<ActualizarResponse> ResultData = BDdatos.FromStoredProcedure
+            (
+                SPActualizarReporteFinalizado,
+                new List<DataParam>()
+                {
+                    new DataParam(){ Id = "@Id", Value = idreporte, Type = System.Data.DbType.Int32},
+                }
+            );
+            if (ResultData.Count > 0)
+            {
+                Result = ResultData;
+            }
+            return Result[0];
+        }
+
         public List<ReporteResponse> Obtener(string correo)
         {
             List<ReporteResponse> Result = new List<ReporteResponse>();
@@ -90,12 +187,27 @@ namespace Reporte.Models
             );
             return ResultData[0];
         }
-        public List<ReporteAdminitradorGeneral> ObtenerReporteGeneral(int trimestre,int anio)
+        public EstadoTrimestreReporte EstadoReporteTrimestre(int trimestre,int idarea)
+        {
+            DataMapper<EstadoTrimestreReporte> BDdatos = new DataMapper<EstadoTrimestreReporte>(SVCUNIDADGENERO);
+            List<EstadoTrimestreReporte> ResultData = BDdatos.FromStoredProcedure
+            (
+                SPEstAdoTrimestreReporte,
+                new List<DataParam>()
+                {
+                    new DataParam(){ Id = "@Trimestre", Value = trimestre, Type = System.Data.DbType.Int32 },
+                    new DataParam(){ Id = "@IdArea", Value = idarea, Type = System.Data.DbType.Int32 },
+
+                }
+            );
+            return ResultData[0];
+        }
+        public List<ReporteAdminitradorGeneral> ObtenerReporteGeneral(int trimestre, int anio)
         {
             List<ReporteAdminitradorGeneral> Result = new List<ReporteAdminitradorGeneral>();
             List<ReporteAdminitradorGeneralBD> ResultData = new List<ReporteAdminitradorGeneralBD>();
             DataMapper<ReporteAdminitradorGeneralBD> BDdatos = new DataMapper<ReporteAdminitradorGeneralBD>(SVCUNIDADGENERO);
-            if (trimestre !=0 && anio !=0)
+            if (trimestre != 0 && anio != 0)
             {
                 ResultData = BDdatos.FromStoredProcedure
             (

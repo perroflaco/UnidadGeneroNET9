@@ -9,10 +9,10 @@ namespace Catalogo.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class CatalogoController : Controller 
+    public class CatalogoController : Controller
     {
         private readonly ILogger<CatalogoController> _logger;
-        CatalogoModels Catalogo {  get; set; }
+        CatalogoModels Catalogo { get; set; }
         public CatalogoController(ILogger<CatalogoController> logger)
         {
             _logger = logger;
@@ -52,6 +52,11 @@ namespace Catalogo.Controllers
             List<AreaEnlace> Result = new List<AreaEnlace>();
             Result = Catalogo.AreasEnlaces();
             return Result;
+        }
+        [HttpGet("trimestreactivo")]
+        public TrimestreActivo Get5()
+        {
+            return Catalogo.TrimestreActivo();
         }
     }
 }

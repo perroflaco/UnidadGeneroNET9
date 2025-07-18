@@ -12,7 +12,7 @@ namespace UnidadGenero.Class
         public string Descripcion { get; set; }
         public Int32 Mostrar { get; set; }
     }
-    
+
     public class Actividad : RowMapper
     {
         public Int32 Id { get; set; }
@@ -28,5 +28,11 @@ namespace UnidadGenero.Class
     {
         public Int32 Id { get; set; }
         public string Nombre { get; set; }
+    }
+    public class TrimestreActivo : RowMapper
+    {
+        public Int32 Id { get; set; }
+        public string Nombre { get; set; }
+        public Int32 Activo { get; set; }
     }
 }

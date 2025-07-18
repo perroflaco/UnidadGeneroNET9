@@ -8,6 +8,7 @@ namespace UnidadGenero.Class
         public Int32 IdAccion { get; set; }
         public String? NombreAccion { get; set; }
         public String Actividad { get; set; }
+        public String? NombreActividad { get; set; }
         public Int32 Trimestre { get; set; }
         public Int32 IdArea { get; set; }
         public String Area { get; set; }
@@ -20,6 +21,7 @@ namespace UnidadGenero.Class
         public String Observaciones { get; set; }
         public DateTime FechaCreacion { get; set; }
         public DateTime FechaModificacion { get; set; }
+        public Int32 Finalizado { get; set; }
     }
     public class ReporteRequest
 
@@ -94,7 +96,21 @@ namespace UnidadGenero.Class
         public String Actividad { get; set; }
         public Int32 Hombres { get; set; }
         public Int32 Mujeres { get; set; }
-        
+
+    }
+    public class ActualizarResponse : RowMapper
+    {
+        public string Actualizar { get; set; }
+    }
+    public class ReportesTrimestreArea
+    {
+        public Int32 IdAccion { get; set; }
+        public string Accion { get; set; }
+        public List<ReporteResponse> Reportes { get; set; }
+    }
+    public class EstadoTrimestreReporte:RowMapper
+    {
+        public string Estado { get; set; }
     }
     
 }

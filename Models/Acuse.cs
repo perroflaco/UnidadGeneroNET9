@@ -64,6 +64,7 @@ namespace Acuse.Models
                     response.Trimestre = x.Trimestre;
                     response.IdArea = x.IdArea;
                     response.Area = x.Area;
+                    response.Hombres = x.Hombres;
                     response.Mujeres = x.Mujeres;
                     response.Descripcion = x.Descripcion;
                     response.Cualitativos = x.Cualitativos;
@@ -108,6 +109,7 @@ namespace Acuse.Models
                         response.Trimestre = x.Trimestre;
                         response.IdArea = x.IdArea;
                         response.Area = x.Area;
+                        response.Hombres = x.Hombres;
                         response.Mujeres = x.Mujeres;
                         response.Descripcion = x.Descripcion;
                         response.Cualitativos = x.Cualitativos;
@@ -129,6 +131,7 @@ namespace Acuse.Models
                         response.Trimestre = x.Trimestre;
                         response.IdArea = x.IdArea;
                         response.Area = x.Area;
+                        response.Hombres = x.Hombres;
                         response.Mujeres = x.Mujeres;
                         response.Descripcion = x.Descripcion;
                         response.Cualitativos = x.Cualitativos;

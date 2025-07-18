@@ -10,8 +10,9 @@ namespace Catalogo.Models
         private const String SPObtenerActividades = "SP_Obtener_Actividades";
         private const String SPObtenerMedios = "SP_Obtener_Medios";
         private const String SPListaAreasEnlaces = "SP_Lista_Area_Enlance";
+        private const String SPObtenerTrimestreActivo = "SP_Obtener_Trimestre_Activo";
         private string SVCUNIDADGENERO { get; set; } = "sqlprodv21_UnidadadGenero";
-        private string LOCALUNIDADGENERO {get; set;} = "local_UnidadGenero";
+        private string LOCALUNIDADGENERO { get; set; } = "local_UnidadGenero";
         public CatalogoModels() { }
         public Catalogos Obtener()
         {
@@ -73,6 +74,20 @@ namespace Catalogo.Models
             if (ResultData.Count > 0)
             {
                 Result = ResultData;
+            }
+            return Result;
+        }
+        public TrimestreActivo TrimestreActivo()
+        {
+            TrimestreActivo Result = new TrimestreActivo();
+            DataMapper<TrimestreActivo> datos = new DataMapper<TrimestreActivo>(SVCUNIDADGENERO);
+            List<TrimestreActivo> ResultData = datos.FromStoredProcedure
+            (
+                SPObtenerTrimestreActivo
+            );
+            if (ResultData.Count > 0)
+            {
+                Result = ResultData[0];
             }
             return Result;
         }

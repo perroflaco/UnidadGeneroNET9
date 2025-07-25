@@ -69,7 +69,7 @@ namespace Reporte.Models
             List<ReporteResponse> ResultData = BDdatos.FromStoredProcedure
             (
                 SPObtenerReportesTrimestreArea,
-                                new List<DataParam>()
+                new List<DataParam>()
                 {
                     new DataParam(){ Id = "@Trimestre", Value = trimestre, Type = System.Data.DbType.Int32},
                     new DataParam(){ Id = "@IdArea", Value = idarea, Type = System.Data.DbType.Int32},

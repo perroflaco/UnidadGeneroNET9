@@ -175,6 +175,74 @@ namespace Upload.Controllers
             });
         }
 
+
+        [HttpGet("vida-saludable/{cct}")]
+        public async Task<IActionResult> GetZipCCT(string cct)
+        {
+            Server = SEVConfigAssistant.Configuration["SambaResource:UDG:Server"]; //variablles de conexion al recurso 
+            Shared = SEVConfigAssistant.Configuration["SambaResource:UDG:Shared"];
+            Domain = SEVConfigAssistant.Configuration["SambaResource:UDG:Domain"];
+            Usuario = SEVConfigAssistant.Configuration["SambaResource:UDG:User"];
+            Clave = SEVConfigAssistant.Configuration["SambaResource:UDG:Password"];
+
+            AuthUser = new NtlmPasswordAuthentication(Domain, Usuario, Clave);
+            string remotePath = $"smb://{Server}/{Shared}/VIDA SALUDABLE/{cct}/"; //ruta :D
+            SmbFile cctDir = new SmbFile(remotePath, AuthUser);
+
+            if (!cctDir.Exists() || !cctDir.IsDirectory())
+            {
+            return NotFound("Carpeta no encontrada.");
+            }
+
+            // encontrar carpeta
+            var pdfFiles = new System.Collections.Generic.List<SmbFile>();
+            foreach (var file in cctDir.ListFiles())
+            {
+            if (!file.IsDirectory() && file.GetName().EndsWith(".pdf", StringComparison.OrdinalIgnoreCase))
+            {
+                pdfFiles.Add(file); //valido que si sean pdfs
+            }
+            }
+
+            if (pdfFiles.Count == 0)
+            {
+            return NotFound("No se encontraron archivos PDF en la carpeta.");
+            }
+            
+            //creo el zip en memoria :D
+
+            using (var memoryStream = new MemoryStream())
+            {
+                using (var archive = new System.IO.Compression.ZipArchive(memoryStream, System.IO.Compression.ZipArchiveMode.Create, true))
+                {
+                    foreach (var pdf in pdfFiles)
+                    {
+                        using (var pdfStream = pdf.GetInputStream())
+                        {
+                            var entry = archive.CreateEntry(pdf.GetName(), System.IO.Compression.CompressionLevel.Fastest);
+                            using (var entryStream = entry.Open())
+                            {
+                                byte[] buffer = new byte[81920];
+                                int bytesRead;
+                                while ((bytesRead = pdfStream.Read(buffer, 0, buffer.Length)) > 0)
+                                {
+                                    entryStream.Write(buffer, 0, bytesRead);
+                                }
+                            }
+                        }
+                    }
+                }
+                memoryStream.Position = 0;
+                var zipFileName = $"{cct}_pdfs.zip"; //y descargo :P
+                return File(memoryStream.ToArray(), "application/zip", zipFileName);
+            }
+        }
+
+            
+        
+
+
+
         [HttpGet("{anio}/area/{area}")]
         public async Task<IActionResult> GetArchivosPorAreaYAnio(int anio, string area)
         {

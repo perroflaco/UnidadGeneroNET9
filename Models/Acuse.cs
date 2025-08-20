@@ -210,7 +210,7 @@ namespace Acuse.Models
             DatosDB = ObtenerAcuseReporteAdministrador(idarea, trimeestre);
             DatosDB.ForEach(x =>
             { 
-                    AcuseReporteAdminitrador? area = Result.Find(a => a.Id == x.Id);
+                    AcuseReporteAdminitrador? area = Result.Find(a => a.Id == x.IdArea);
                     if (area == null)
                     {
                         AcuseReporteAdminitrador nuevaarea = new AcuseReporteAdminitrador();
@@ -267,7 +267,7 @@ namespace Acuse.Models
                     }
                     else
                     {
-                        int indexgeneral = Result.FindIndex(a => a.Id == x.Id);
+                        int indexgeneral = Result.FindIndex(a => a.Id == x.IdArea);
                         int indexacuses = Result[indexgeneral].Acuses.FindIndex(a => a.Acuses.Id == x.Id);
                         int indexreporte = Result[indexgeneral].Acuses[indexacuses].Reportes.FindIndex(r => r.Accion == x.NombreAccion);
                         if (indexreporte == -1)

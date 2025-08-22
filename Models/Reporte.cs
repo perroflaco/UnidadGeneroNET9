@@ -14,7 +14,7 @@ namespace Reporte.Models
         private const String SPActualizarReporteFinalizado = "SP_Actualizar_Reporte_Finalizado";
         private const String SPEliminarReporte = "SP_Eliminar_Reporte";
         private const String SPReporteGeneral = "SP_Adminitrador_Reporte_General";
-        private const String SPReporteGeneralParametros = "SP_Adminitrador_Reporte_General_parametros";
+        private const String SPReporteGeneralParametros = "SP_Adminitrador_Reporte_General_parametros_Todas";
         private const string SPEstAdoTrimestreReporte = "SP_Estado_Reporte_Trimestre";
         private string SVCUNIDADGENERO { get; set; } = "sqlprodv21_UnidadadGenero";
         public ReporteModels() { }
@@ -253,6 +253,7 @@ namespace Reporte.Models
                         activdad.ResultadosCualitativos = r.Cualitativos;
                         activdad.MediosVerificacion = r.IdMedio;
                         activdad.Observaciones = r.Observaciones;
+                        activdad.Finalizado = r.Finalizado;
                         area.Actividades.Add(activdad);
                         TotalParticipantes participantes = new TotalParticipantes();
                         participantes.IdActividad = r.IdActividad;
@@ -286,6 +287,7 @@ namespace Reporte.Models
                                 activdadnueva.ResultadosCualitativos = r.Cualitativos;
                                 activdadnueva.MediosVerificacion = r.IdMedio;
                                 activdadnueva.Observaciones = r.Observaciones;
+                                activdadnueva.Finalizado = r.Finalizado;
                                 Result[indexgeneral].Areas[indexarea].Actividades.Add(activdadnueva);
                                 var indextotal = Result[indexgeneral].TotalParticipantes.FindIndex(t => t.IdActividad == r.IdActividad);
                                 if (indextotal != -1)
@@ -321,6 +323,7 @@ namespace Reporte.Models
                                 activdadnueva.ResultadosCualitativos = r.Cualitativos;
                                 activdadnueva.MediosVerificacion = r.IdMedio;
                                 activdadnueva.Observaciones = r.Observaciones;
+                                activdadnueva.Finalizado= r.Finalizado;
                                 Result[indexgeneral].Areas[indexarea].Actividades.Add(activdadnueva);
                                 var indextotal = Result[indexgeneral].TotalParticipantes.FindIndex(t => t.IdActividad == r.IdActividad);
                                 if (indextotal != -1)

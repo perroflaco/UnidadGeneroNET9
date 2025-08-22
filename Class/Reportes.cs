@@ -63,6 +63,7 @@ namespace UnidadGenero.Class
         public String Cualitativos { get; set; }
         public String IdMedio { get; set; }
         public String Observaciones { get; set; }
+        public Int32 Finalizado { get; set; }
 
     }
     public class ReporteAdminitradorGeneral
@@ -89,6 +90,7 @@ namespace UnidadGenero.Class
         public String ResultadosCualitativos { get; set; }
         public String MediosVerificacion { get; set; }
         public String Observaciones { get; set; }
+        public Int32 Finalizado { get; set; } 
     }
     public class TotalParticipantes
     {

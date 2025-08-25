@@ -28,10 +28,10 @@ namespace Reporte.Controllers
         }
 
         [HttpGet("administrador/general")]
-        public List<ReporteAdminitradorGeneral> Get1( [FromQuery] int trimestre =0, [FromQuery] int anio=0)
+        public List<ReporteAdminitradorGeneral> Get1( [FromQuery] int trimestre =0, [FromQuery] int anio=0, [FromQuery] int finalizado=-1)
         {
             List<ReporteAdminitradorGeneral> Result = new List<ReporteAdminitradorGeneral>();
-            Result = Reporte.ObtenerReporteGeneral(trimestre,anio);
+            Result = Reporte.ObtenerReporteGeneral(trimestre,anio,finalizado);
             return Result;
         }
         

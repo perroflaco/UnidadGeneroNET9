@@ -202,7 +202,7 @@ namespace Reporte.Models
             );
             return ResultData[0];
         }
-        public List<ReporteAdminitradorGeneral> ObtenerReporteGeneral(int trimestre, int anio)
+        public List<ReporteAdminitradorGeneral> ObtenerReporteGeneral(int trimestre, int anio, int finalizado)
         {
             List<ReporteAdminitradorGeneral> Result = new List<ReporteAdminitradorGeneral>();
             List<ReporteAdminitradorGeneralBD> ResultData = new List<ReporteAdminitradorGeneralBD>();
@@ -215,7 +215,8 @@ namespace Reporte.Models
                 new List<DataParam>()
                 {
                     new DataParam(){ Id = "@Trimestre", Value = trimestre, Type = System.Data.DbType.Int32 },
-                    new DataParam(){ Id = "@Anio", Value = anio, Type = System.Data.DbType.Int32 }
+                    new DataParam(){ Id = "@Anio", Value = anio, Type = System.Data.DbType.Int32 },
+                    new DataParam(){ Id = "@Finalizado", Value = finalizado, Type = System.Data.DbType.Int32 }
 
                 }
             );
@@ -265,7 +266,7 @@ namespace Reporte.Models
                     }
                     else
                     {
-                        var indexgeneral = Result.FindIndex(r => r.IdAccion == r.IdAccion);
+                        var indexgeneral = Result.FindIndex(rr => rr.IdAccion == r.IdAccion);
                         var existearea = Result[indexgeneral].Areas.Find(a => a.IdArea == r.Id);
                         if (existearea == null)
                         {
@@ -276,6 +277,8 @@ namespace Reporte.Models
                             Result[indexgeneral].Areas.Add(areanueva);
                             var indexarea = Result[indexgeneral].Areas.FindIndex(aa => aa.IdArea == r.Id);
                             var misma = Result[indexgeneral].IdAccion == r.IdAccion ? true : false;
+                            var indexareageneral = Result[indexgeneral].Areas.FindIndex(ar => ar.IdArea == r.Id);
+                            var existeactividad = Result[indexgeneral].Areas[indexareageneral].Actividades.Find(ac => ac.IdActividad == r.IdActividad);
                             if (misma)
                             {
                                 ReporteAdminitradorActivdad activdadnueva = new ReporteAdminitradorActivdad();
@@ -312,6 +315,8 @@ namespace Reporte.Models
                         {
                             var indexarea = Result[indexgeneral].Areas.FindIndex(aa => aa.IdArea == r.Id);
                             var misma = Result[indexgeneral].IdAccion == r.IdAccion ? true : false;
+                            var indexareageneral = Result[indexgeneral].Areas.FindIndex(ar => ar.IdArea == r.Id);
+                            var existeactividad = Result[indexgeneral].Areas[indexareageneral].Actividades.Find(ac => ac.IdActividad == r.IdActividad);
                             if (misma)
                             {
                                 ReporteAdminitradorActivdad activdadnueva = new ReporteAdminitradorActivdad();
@@ -323,7 +328,7 @@ namespace Reporte.Models
                                 activdadnueva.ResultadosCualitativos = r.Cualitativos;
                                 activdadnueva.MediosVerificacion = r.IdMedio;
                                 activdadnueva.Observaciones = r.Observaciones;
-                                activdadnueva.Finalizado= r.Finalizado;
+                                activdadnueva.Finalizado = r.Finalizado;
                                 Result[indexgeneral].Areas[indexarea].Actividades.Add(activdadnueva);
                                 var indextotal = Result[indexgeneral].TotalParticipantes.FindIndex(t => t.IdActividad == r.IdActividad);
                                 if (indextotal != -1)

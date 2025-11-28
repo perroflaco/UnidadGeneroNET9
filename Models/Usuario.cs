@@ -10,7 +10,7 @@ namespace Usuario.Models
    public class UsuarioModels
     {
         private const string SPCrearUsuario = "SP_Crear_Usuario"; // Nombre del SP para crear usuario
-        private string SVCUNIDADGENERO { get; set; } = "sqlprodv21_UnidadadGenero";
+        private string SVCUNIDADGENERO { get; set; } = "sqlprodv18_UnidadadGenero";
 
         public UsuarioModels() { }
 

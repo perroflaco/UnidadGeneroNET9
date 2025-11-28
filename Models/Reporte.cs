@@ -16,7 +16,7 @@ namespace Reporte.Models
         private const String SPReporteGeneral = "SP_Adminitrador_Reporte_General";
         private const String SPReporteGeneralParametros = "SP_Adminitrador_Reporte_General_parametros_Todas";
         private const string SPEstAdoTrimestreReporte = "SP_Estado_Reporte_Trimestre";
-        private string SVCUNIDADGENERO { get; set; } = "sqlprodv21_UnidadadGenero";
+        private string SVCUNIDADGENERO { get; set; } = "sqlprodv18_UnidadadGenero";
         public ReporteModels() { }
         public ReporteResponse Crear(ReporteRequest datos)
         {

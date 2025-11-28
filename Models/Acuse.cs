@@ -13,7 +13,7 @@ namespace Acuse.Models
         private const String SPCrearAcuse = "SP_Crear_Acuse";
         public const String SPObtenerAcuses = "SP_Obtener_Acuses";
         public const String SPAdministradorObtenerAcuses = "SP_Administrador_Obtener_Acuses";
-        private string SVCUNIDADGENERO { get; set; } = "sqlprodv21_UnidadadGenero";
+        private string SVCUNIDADGENERO { get; set; } = "sqlprodv18_UnidadadGenero";
         public AcuseModels()
         {
             Reporte = new ReporteModels();

@@ -11,7 +11,7 @@ namespace Catalogo.Models
         private const String SPObtenerMedios = "SP_Obtener_Medios";
         private const String SPListaAreasEnlaces = "SP_Lista_Area_Enlance";
         private const String SPObtenerTrimestreActivo = "SP_Obtener_Trimestre_Activo";
-        private string SVCUNIDADGENERO { get; set; } = "sqlprodv21_UnidadadGenero";
+        private string SVCUNIDADGENERO { get; set; } = "sqlprodv18_UnidadadGenero";
         private string LOCALUNIDADGENERO { get; set; } = "local_UnidadGenero";
         public CatalogoModels() { }
         public Catalogos Obtener()

@@ -11,7 +11,7 @@ namespace Configuracion.Models
     {
         ReporteModels Reporte { get; set; }
         private const String SPActualizarTrimestre = "SP_Administrador_Actualizar_Trimestre";
-        private string SVCUNIDADGENERO { get; set; } = "sqlprodv21_UnidadadGenero";
+        private string SVCUNIDADGENERO { get; set; } = "sqlprodv18_UnidadadGenero";
         public ConfiguracionModels()
         {
             Reporte = new ReporteModels();

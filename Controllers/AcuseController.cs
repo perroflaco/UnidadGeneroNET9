@@ -27,7 +27,7 @@ namespace Acuse.Controllers
             return Result;
         }
         [HttpGet("administrador/reporte")]
-        public List<AcuseReporteAdminitrador> Get1([FromQuery] int idarea =0, [FromQuery] int trimestre=0)
+        public List<AcuseReporteAdminitrador> Get1([FromQuery] int idarea=0, [FromQuery] int trimestre=0)
         {
             List<AcuseReporteAdminitrador> Result = new List<AcuseReporteAdminitrador>();
             Result = Acuse.ObtenerAdministrador(idarea,trimestre);

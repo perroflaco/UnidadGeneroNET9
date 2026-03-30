@@ -254,6 +254,8 @@ namespace Reporte.Models
                         activdad.ResultadosCualitativos = r.Cualitativos;
                         activdad.MediosVerificacion = r.IdMedio;
                         activdad.Observaciones = r.Observaciones;
+                        activdad.Lugar = r.Lugar;
+                        activdad.FechaActividad = r.FechaActividad;
                         activdad.Finalizado = r.Finalizado;
                         area.Actividades.Add(activdad);
                         TotalParticipantes participantes = new TotalParticipantes();
@@ -290,6 +292,8 @@ namespace Reporte.Models
                                 activdadnueva.ResultadosCualitativos = r.Cualitativos;
                                 activdadnueva.MediosVerificacion = r.IdMedio;
                                 activdadnueva.Observaciones = r.Observaciones;
+                                activdadnueva.Lugar = r.Lugar;
+                                activdadnueva.FechaActividad = r.FechaActividad;
                                 activdadnueva.Finalizado = r.Finalizado;
                                 Result[indexgeneral].Areas[indexarea].Actividades.Add(activdadnueva);
                                 var indextotal = Result[indexgeneral].TotalParticipantes.FindIndex(t => t.IdActividad == r.IdActividad);
@@ -328,6 +332,8 @@ namespace Reporte.Models
                                 activdadnueva.ResultadosCualitativos = r.Cualitativos;
                                 activdadnueva.MediosVerificacion = r.IdMedio;
                                 activdadnueva.Observaciones = r.Observaciones;
+                                activdadnueva.Lugar = r.Lugar;
+                                activdadnueva.FechaActividad = r.FechaActividad;
                                 activdadnueva.Finalizado = r.Finalizado;
                                 Result[indexgeneral].Areas[indexarea].Actividades.Add(activdadnueva);
                                 var indextotal = Result[indexgeneral].TotalParticipantes.FindIndex(t => t.IdActividad == r.IdActividad);

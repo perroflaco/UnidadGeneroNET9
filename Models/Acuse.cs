@@ -5,6 +5,7 @@ using SEV.Library;
 using Reporte.Models;
 using Microsoft.Extensions.ObjectPool;
 using Microsoft.OpenApi.Any;
+using SharpCifs.Util.Sharpen;
 namespace Acuse.Models
 {
     public class AcuseModels
@@ -201,176 +202,90 @@ namespace Acuse.Models
             });
             return Result;
         }
-        public List<AcuseReporteAdminitrador> ObtenerAdministrador(int idarea, int trimeestre)
+
+        public List<AcuseReporteAdminitrador> ObtenerAdministrador(int idarea, int trimestre)
         {
-            List<AcuseReporteAdminitrador> Result = new List<AcuseReporteAdminitrador>();
-            List<AcuseInfoResponse> DatosDB = new List<AcuseInfoResponse>();
-            List<AcuseReporteAdminitrador> General = new List<AcuseReporteAdminitrador>(); 
-            List<ReporteAcuse> Estructura = new List<ReporteAcuse>();
-            DatosDB = ObtenerAcuseReporteAdministrador(idarea, trimeestre);
-            DatosDB.ForEach(x =>
-            { 
-                    AcuseReporteAdminitrador? area = Result.Find(a => a.Id == x.IdArea);
-                    if (area == null)
+            var result = new List<AcuseReporteAdminitrador>();
+            var datosDB = ObtenerAcuseReporteAdministrador(idarea, trimestre);
+
+            foreach (var x in datosDB)
+            {
+                var area = result.FirstOrDefault(a => a.Id == x.IdArea);
+                if (area == null)
+                {
+                    area = new AcuseReporteAdminitrador
                     {
-                        AcuseReporteAdminitrador nuevaarea = new AcuseReporteAdminitrador();
-                        nuevaarea.Id = x.IdArea;
-                        nuevaarea.Area = x.Area;
-                        nuevaarea.Acuses = new List<AcuseReporte>();
-                        AcuseReporte dato = new AcuseReporte();
-                        dato.Acuses = new AcuseReporteDatos();
-                        dato.Reportes = new List<ReporteAcuse>();
-                        dato.Enlace = new EnlaceAcuse();
-                        dato.Archivo = new ArchivoAcuse();
-                        dato.Acuses.Id = x.Id;
-                        dato.Acuses.FechaCreacion = x.FechaCreacion;
-                        ReporteAcuse reporte = new ReporteAcuse();
-                        reporte.Reportes = new List<ReporteResponse>();
-                        reporte.Accion = x.NombreAccion;
-                        ReporteResponse response = new ReporteResponse();
-                        response.Id = x.IdReporte;
-                        response.IdAccion = x.IdAccion;
-                        response.NombreAccion = x.NombreAccion;
-                        response.Actividad = x.Actividad;
-                        response.Trimestre = x.Trimestre;
-                        response.IdArea = x.IdArea;
-                        response.Area = x.Area;
-                        response.Hombres = x.Hombres;
-                        response.Mujeres = x.Mujeres;
-                        response.Descripcion = x.Descripcion;
-                        response.Cualitativos = x.Cualitativos;
-                        response.Porcentaje = x.Porcentaje;
-                        response.IdMedio = x.IdMedio;
-                        response.Observaciones = x.Observaciones;
-                        response.FechaCreacion = x.FechaCreacionReporte;
-                        response.FechaModificacion = x.FechaModificacion;
-                        response.Finalizado = x.Finalizado;
-                        ReporteAcuse? estaaccion = dato.Reportes.Find(a => a.Accion == x.NombreAccion);
-                        if (estaaccion == null)
-                        {
-                            reporte.Reportes.Add(response);
-                            dato.Reportes.Add(reporte);
-                        }
-                        else
-                        {
-                            int index = dato.Reportes.FindIndex(a => a.Accion == x.NombreAccion);
-                            dato.Reportes[index].Reportes.Add(response);
+                        Id = x.IdArea,
+                        Area = x.Area,
+                        Acuses = new List<AcuseReporte>()
+                    };
+                    result.Add(area);
+                }
 
-                        }
-                        dato.Enlace.NombreEnlace = x.NombreEnlace;
-                        dato.Enlace.Correo = x.Correo;
-                        dato.Archivo.Nombre = x.Nombre;
-                        dato.Archivo.Ruta = x.Ruta;
-                        nuevaarea.Acuses.Add(dato);
-                        Result.Add(nuevaarea);
-
-                    }
-                    else
+                var acuse = area.Acuses.FirstOrDefault(a => a.Acuses.Id == x.Id);
+                if (acuse == null)
+                {
+                    acuse = new AcuseReporte
                     {
-                        int indexgeneral = Result.FindIndex(a => a.Id == x.IdArea);
-                        int indexacuses = Result[indexgeneral].Acuses.FindIndex(a => a.Acuses.Id == x.Id);
-                        int indexreporte = Result[indexgeneral].Acuses[indexacuses].Reportes.FindIndex(r => r.Accion == x.NombreAccion);
-                        if (indexreporte == -1)
+                        Acuses = new AcuseReporteDatos
                         {
-                            ReporteAcuse reporte = new ReporteAcuse();
-                            reporte.Reportes = new List<ReporteResponse>();
-                            reporte.Accion = x.NombreAccion;
-                            ReporteResponse response = new ReporteResponse();
-                            response.Id = x.IdReporte;
-                            response.IdAccion = x.IdAccion;
-                            response.NombreAccion = x.NombreAccion;
-                            response.Actividad = x.Actividad;
-                            response.Trimestre = x.Trimestre;
-                            response.IdArea = x.IdArea;
-                            response.Area = x.Area;
-                            response.Hombres = x.Hombres;
-                            response.Mujeres = x.Mujeres;
-                            response.Descripcion = x.Descripcion;
-                            response.Cualitativos = x.Cualitativos;
-                            response.Porcentaje = x.Porcentaje;
-                            response.IdMedio = x.IdMedio;
-                            response.Observaciones = x.Observaciones;
-                            response.FechaCreacion = x.FechaCreacionReporte;
-                            response.FechaModificacion = x.FechaModificacion;
-                            response.Finalizado = x.Finalizado;
-                            reporte.Reportes.Add(response);
-                            Result[indexgeneral].Acuses[indexacuses].Reportes.Add(reporte);
-                        }
-                        else
+                            Id = x.Id,
+                            FechaCreacion = x.FechaCreacion
+                        },
+                        Reportes = new List<ReporteAcuse>(),
+                        Enlace = new EnlaceAcuse
                         {
-                            ReporteResponse response = new ReporteResponse();
-                            response.Id = x.IdReporte;
-                            response.IdAccion = x.IdAccion;
-                            response.NombreAccion = x.NombreAccion;
-                            response.Actividad = x.Actividad;
-                            response.Trimestre = x.Trimestre;
-                            response.IdArea = x.IdArea;
-                            response.Area = x.Area;
-                            response.Hombres = x.Hombres;
-                            response.Mujeres = x.Mujeres;
-                            response.Descripcion = x.Descripcion;
-                            response.Cualitativos = x.Cualitativos;
-                            response.Porcentaje = x.Porcentaje;
-                            response.IdMedio = x.IdMedio;
-                            response.Observaciones = x.Observaciones;
-                            response.FechaCreacion = x.FechaCreacionReporte;
-                            response.FechaModificacion = x.FechaModificacion;
-                            response.Finalizado = x.Finalizado;
-                            Result[indexgeneral].Acuses[indexacuses].Reportes[indexreporte].Reportes.Add(response);
+                            NombreEnlace = x.NombreEnlace,
+                            Correo = x.Correo
+                        },
+                        Archivo = new ArchivoAcuse
+                        {
+                            Nombre = x.Nombre,
+                            Ruta = x.Ruta
                         }
-                    }            
+                    };
 
-                /*if (dato.Acuses.Id != x.Id)
-                        {
-                            dato.Acuses.Id = x.Id;
-                            dato.Acuses.FechaCreacion = x.FechaCreacion;
-                        }
-                        ReporteAcuse reporte = new ReporteAcuse();
-                        reporte.Reportes = new List<ReporteResponse>();
-                        reporte.Accion = x.NombreAccion;
-                        ReporteResponse response = new ReporteResponse();
-                        response.Id = x.IdReporte;
-                        response.IdAccion = x.IdAccion;
-                        response.NombreAccion = x.NombreAccion;
-                        response.Actividad = x.Actividad;
-                        response.Trimestre = x.Trimestre;
-                        response.IdArea = x.IdArea;
-                        response.Area = x.Area;
-                        response.Mujeres = x.Mujeres;
-                        response.Descripcion = x.Descripcion;
-                        response.Cualitativos = x.Cualitativos;
-                        response.Porcentaje = x.Porcentaje;
-                        response.IdMedio = x.IdMedio;
-                        response.Observaciones = x.Observaciones;
-                        response.FechaCreacion = x.FechaCreacionReporte;
-                        response.FechaModificacion = x.FechaModificacion;
-                        ReporteAcuse? estaaccion = dato.Reportes.Find(a => a.Accion == x.NombreAccion);
-                        if (estaaccion == null)
-                        {
-                            reporte.Reportes.Add(response);
-                            dato.Reportes.Add(reporte);
-                        }
-                        else
-                        {
-                            int index = dato.Reportes.FindIndex(a => a.Accion == x.NombreAccion);
-                            dato.Reportes[index].Reportes.Add(response);   
+                    area.Acuses.Add(acuse);
+                }
 
-                        }
-                        {
-                            dato.Enlace.NombreEnlace = x.NombreEnlace;
-                            dato.Enlace.Correo = x.Correo;
-                        }
-                        if (dato.Archivo.Nombre == null)
-                        {
-                            dato.Archivo.Nombre = x.Nombre;
-                            dato.Archivo.Ruta = x.Ruta;
-                        }*/
+                var reporte = acuse.Reportes.FirstOrDefault(r => r.Accion == x.NombreAccion);
+                if (reporte == null)
+                {
+                    reporte = new ReporteAcuse
+                    {
+                        Accion = x.NombreAccion,
+                        Reportes = new List<ReporteResponse>()
+                    };
+                    acuse.Reportes.Add(reporte);
+                }
 
+                var response = new ReporteResponse
+                {
+                    Id = x.IdReporte,
+                    IdAccion = x.IdAccion,
+                    NombreAccion = x.NombreAccion,
+                    Actividad = x.Actividad,
+                    Trimestre = x.Trimestre,
+                    IdArea = x.IdArea,
+                    Area = x.Area,
+                    Hombres = x.Hombres,
+                    Mujeres = x.Mujeres,
+                    Descripcion = x.Descripcion,
+                    Cualitativos = x.Cualitativos,
+                    Porcentaje = x.Porcentaje,
+                    IdMedio = x.IdMedio,
+                    Observaciones = x.Observaciones,
+                    FechaCreacion = x.FechaCreacionReporte,
+                    FechaModificacion = x.FechaModificacion,
+                    Finalizado = x.Finalizado
+                };
 
+                reporte.Reportes.Add(response);
+            }
 
-            });
-            return Result;
+            return result;
         }
+
         public List<AcuseInfoResponse> ObtenerAcuseReporte(string correo)
         {
             List<AcuseInfoResponse> Result = new List<AcuseInfoResponse>();

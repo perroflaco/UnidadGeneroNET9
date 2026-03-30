@@ -65,6 +65,9 @@ namespace UnidadGenero.Class
         public String Observaciones { get; set; }
         public Int32 Finalizado { get; set; }
 
+        public String Lugar { get; set; }
+
+        public DateTime FechaActividad { get; set; }
     }
     public class ReporteAdminitradorGeneral
     {
@@ -90,6 +93,10 @@ namespace UnidadGenero.Class
         public String ResultadosCualitativos { get; set; }
         public String MediosVerificacion { get; set; }
         public String Observaciones { get; set; }
+
+        public String Lugar { get; set; }
+
+        public DateTime FechaActividad { get; set; }
         public Int32 Finalizado { get; set; } 
     }
     public class TotalParticipantes
